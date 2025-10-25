@@ -27,6 +27,13 @@ body{
   padding-top: 40px;
   padding-bottom: 40px;
 }
+.header-text{
+  font-size: 0.9rem;
+  color: rgba(15,23,42,0.55);
+  text-align: center;
+  margin-bottom: 12px;
+}
+.header-text a{ color: var(--accent); text-decoration:none; }
 .counter-box{
   width:340px;
   background:var(--card);
@@ -47,17 +54,14 @@ input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba
 .celebration.show{transform:translate(-50%,-50%) scale(1);opacity:1;}
 #confettiCanvas{position:fixed;left:0;top:0;pointer-events:none;}
 .small-note{font-size:0.9rem;color:rgba(15,23,42,0.45);margin-top:6px;}
-.footer-text{
-  margin-top:16px;
-  font-size:0.8rem;
-  color: rgba(15,23,42,0.55);
-  text-align: center;
-}
-.footer-text a{color:var(--accent);text-decoration:none;}
 </style>
 </head>
 <body>
 <div id="appBox">
+  <div class="header-text">
+    Developed by Utpal Singh - <a href="https://www.youtube.com/@CreateMarketArt" target="_blank">YouTube Channel</a>
+  </div>
+
   <div class="counter-box">
     <div class="small-note">Tap anywhere (or press +) to count</div>
     <div id="count">0</div>
@@ -70,18 +74,6 @@ input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba
     </div>
     <div class="toggle"><button class="btn" id="themeBtn">Toggle Theme</button></div>
   </div>
-  <div id="appBox">
-  <!-- Top header with name/link -->
-  <div class="header-text">
-    Developed by Utpal Singh - 
-    <a href="https://www.youtube.com/@CreateMarketArt" target="_blank">YouTube Channel</a>
-  </div>
-
-  <div class="counter-box">
-    <!-- Counter content here -->
-  </div>
-</div>
-
 </div>
 <div id="celebration" class="celebration">🌸 Radhe Krishna 🌸</div>
 <canvas id="confettiCanvas"></canvas>
