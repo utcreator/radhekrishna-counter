@@ -17,7 +17,6 @@ body{
   display:flex;
   flex-direction:column;
   min-height:100vh;
-  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 #appBox {
   flex: 1;
@@ -26,7 +25,7 @@ body{
   align-items: center;
   justify-content: flex-start;
   padding-top: 40px;
-  padding-bottom: calc(60px + env(safe-area-inset-bottom));
+  padding-bottom: 40px;
 }
 .counter-box{
   width:340px;
@@ -49,15 +48,10 @@ input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba
 #confettiCanvas{position:fixed;left:0;top:0;pointer-events:none;}
 .small-note{font-size:0.9rem;color:rgba(15,23,42,0.45);margin-top:6px;}
 .footer-text{
-  position: fixed;
-  bottom: env(safe-area-inset-bottom, 0);
-  width: 100%;
-  text-align: center;
-  padding: 12px 0;
-  font-size: 0.8rem;
+  margin-top:16px;
+  font-size:0.8rem;
   color: rgba(15,23,42,0.55);
-  background: var(--bg);
-  z-index: 10;
+  text-align: center;
 }
 .footer-text a{color:var(--accent);text-decoration:none;}
 </style>
@@ -76,8 +70,10 @@ input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba
     </div>
     <div class="toggle"><button class="btn" id="themeBtn">Toggle Theme</button></div>
   </div>
+  <div class="footer-text">
+    Developed by Utpal Singh - <a href="https://www.youtube.com/@CreateMarketArt" target="_blank">YouTube Channel</a>
+  </div>
 </div>
-<div class="footer-text">Developed by Utpal Singh - <a href="https://www.youtube.com/@CreateMarketArt" target="_blank">YouTube Channel</a></div>
 <div id="celebration" class="celebration">🌸 Radhe Krishna 🌸</div>
 <canvas id="confettiCanvas"></canvas>
 <script>
