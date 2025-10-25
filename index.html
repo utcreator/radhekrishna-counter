@@ -68,7 +68,108 @@ input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba
 <div id="celebration" class="celebration">🌸 Radhe Krishna 🌸</div>
 <canvas id="confettiCanvas"></canvas>
 <script>
-// JS code remains unchanged (increment, reset, theme, confetti, PWA registration)
+// Counter variables
+let count = parseInt(localStorage.getItem('clickCount')) || 0;
+let goal = parseInt(localStorage.getItem('clickGoal')) || 100;
+const countEl = document.getElementById('count');
+const progressBar = document.getElementById('progressBar');
+const goalInput = document.getElementById('goalInput');
+const celebration = document.getElementById('celebration');
+const incBtn = document.getElementById('incBtn');
+const resetBtn = document.getElementById('resetBtn');
+const themeBtn = document.getElementById('themeBtn');
+
+// Initialize display
+countEl.textContent = count;
+goalInput.value = goal;
+updateProgress();
+
+function updateProgress(){
+  let pct = goal>0 ? Math.min((count/goal)*100,100) : 0;
+  progressBar.style.width = pct + '%';
+}
+
+function increment(){
+  count++;
+  countEl.textContent = count;
+  localStorage.setItem('clickCount', count);
+  updateProgress();
+  if(count >= goal) triggerCelebration();
+}
+
+function reset(){
+  count=0;
+  countEl.textContent = count;
+  localStorage.setItem('clickCount', count);
+  updateProgress();
+}
+
+function updateGoal(){
+  let val = parseInt(goalInput.value);
+  if(val && val>0){ goal = val; localStorage.setItem('clickGoal', goal); updateProgress(); }
+}
+
+goalInput.addEventListener('input', updateGoal);
+incBtn.addEventListener('click', increment);
+resetBtn.addEventListener('click', reset);
+
+document.body.addEventListener('click', (e)=>{
+  const tag = e.target.tagName.toLowerCase();
+  if(tag === 'input' || e.target.closest('button')) return;
+  increment();
+});
+
+themeBtn.addEventListener('click', ()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+});
+const savedTheme = localStorage.getItem('theme');
+if(savedTheme === 'dark') document.body.classList.add('dark');
+
+// Celebration + confetti
+let confetti=[];
+const canvas=document.getElementById('confettiCanvas');
+const ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+function triggerCelebration(){
+  celebration.classList.add('show');
+  startConfetti();
+  setTimeout(()=> celebration.classList.remove('show'), 3000);
+}
+function startConfetti(){
+  confetti=[];
+  for(let i=0;i<120;i++){
+    confetti.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*-canvas.height,
+      r: Math.random()*6+2,
+      d: Math.random()*5+2,
+      color: 'hsl('+Math.random()*360+',100%,50%)',
+      tilt: Math.random()*10-5
+    });
+  }
+  animateConfetti();
+  setTimeout(()=> confetti=[],3500);
+}
+function animateConfetti(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  confetti.forEach(c=>{
+    ctx.beginPath();
+    ctx.fillStyle=c.color;
+    ctx.ellipse(c.x,c.y,c.r,c.r/2,c.tilt,0,Math.PI*2);
+    ctx.fill();
+    c.y+=c.d;
+    c.x+=Math.sin(c.tilt);
+    if(c.y>canvas.height) c.y=-10;
+  });
+  if(confetti.length>0) requestAnimationFrame(animateConfetti);
+}
+window.addEventListener('resize', ()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
+
+// PWA service worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+}
 </script>
 </body>
 </html>
