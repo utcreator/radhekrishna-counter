@@ -7,11 +7,32 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#3b82f6">
 <style>
-/* existing styles */
 :root{ --bg:#ffffff; --card:#ffffff; --text:#0f172a; --accent:#3b82f6; }
 body.dark{--bg:#071125;--card:#07203a;--text:#e6f0ff;--accent:#60a5fa;}
-body{ margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden;flex-direction:column;}
-.counter-box{ width:340px;background:var(--card);border-radius:18px;padding:28px;box-shadow:0 8px 30px rgba(59,130,246,0.08);text-align:center;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+#appBox {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.counter-box{
+  width:340px;
+  background:var(--card);
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 8px 30px rgba(59,130,246,0.08);
+  text-align:center;
+}
 #count{font-size:4rem;margin:6px 0;user-select:none;}
 .goal-label{color:var(--text);opacity:0.75;margin-top:6px;}
 input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);text-align:center;margin:8px 0;}
@@ -24,29 +45,30 @@ input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba
 .celebration.show{transform:translate(-50%,-50%) scale(1);opacity:1;}
 #confettiCanvas{position:fixed;left:0;top:0;pointer-events:none;}
 .small-note{font-size:0.9rem;color:rgba(15,23,42,0.45);margin-top:6px;}
-.footer-text{margin-top:12px;font-size:0.8rem;color:rgba(15,23,42,0.55);}
+.footer-text{font-size:0.8rem;color:rgba(15,23,42,0.55);text-align:center;padding:8px;}
 .footer-text a{color:var(--accent);text-decoration:none;}
 </style>
 </head>
 <body>
-<div class="counter-box" id="appBox">
-  <div class="small-note">Tap anywhere (or press +) to count</div>
-  <div id="count">0</div>
-  <div class="goal-label">🎯 Goal</div>
-  <input id="goalInput" type="number" min="1" value="100" />
-  <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
-  <div>
-    <button class="btn" id="incBtn">+ Count</button>
-    <button class="btn reset" id="resetBtn">Reset</button>
+<div id="appBox">
+  <div class="counter-box">
+    <div class="small-note">Tap anywhere (or press +) to count</div>
+    <div id="count">0</div>
+    <div class="goal-label">🎯 Goal</div>
+    <input id="goalInput" type="number" min="1" value="100" />
+    <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
+    <div>
+      <button class="btn" id="incBtn">+ Count</button>
+      <button class="btn reset" id="resetBtn">Reset</button>
+    </div>
+    <div class="toggle"><button class="btn" id="themeBtn">Toggle Theme</button></div>
   </div>
-  <div class="toggle"><button class="btn" id="themeBtn">Toggle Theme</button></div>
-  <div class="footer-text">Developed by Utpal Singh - <a href="https://www.youtube.com/@CreateMarketArt" target="_blank">YouTube Channel</a></div>
 </div>
+<div class="footer-text">Developed by Utpal Singh - <a href="https://www.youtube.com/@CreateMarketArt" target="_blank">YouTube Channel</a></div>
 <div id="celebration" class="celebration">🌸 Radhe Krishna 🌸</div>
 <canvas id="confettiCanvas"></canvas>
 <script>
 // JS code remains unchanged (increment, reset, theme, confetti, PWA registration)
-// Copy all existing JS code here exactly as before
 </script>
 </body>
 </html>
