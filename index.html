@@ -7,8 +7,20 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#3b82f6">
 <style>
-:root{ --bg:#ffffff; --card:#ffffff; --text:#0f172a; --accent:#3b82f6; }
-body.dark{--bg:#071125;--card:#07203a;--text:#e6f0ff;--accent:#60a5fa;}
+:root{
+  --bg:#ffffff;
+  --card:#ffffff;
+  --text:#0f172a;
+  --accent:#3b82f6;
+  --subtext:rgba(15,23,42,0.55);
+}
+body.dark{
+  --bg:#071125;
+  --card:#07203a;
+  --text:#e6f0ff;
+  --accent:#60a5fa;
+  --subtext:rgba(230,240,255,0.55);
+}
 body{
   margin:0;
   background:var(--bg);
@@ -17,27 +29,28 @@ body{
   display:flex;
   flex-direction:column;
   min-height:100vh;
+  transition:background 0.3s,color 0.3s;
 }
-.top-spacer{height:40px;} /* Space for status bar on Android */
+.top-spacer{height:40px;}
 .header-text{
-  position: sticky;
+  position:sticky;
   top:0;
   z-index:100;
   font-size:0.9rem;
-  color: rgba(15,23,42,0.55);
+  color:var(--subtext);
   text-align:center;
-  background: var(--bg);
-  padding: 10px 0;
+  background:var(--bg);
+  padding:10px 0;
+  transition:color 0.3s, background 0.3s;
 }
-.header-text a{ color: var(--accent); text-decoration:none; }
-#appBox {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding-top: 20px;
-  padding-bottom: 40px;
+.header-text a{color:var(--accent);text-decoration:none;}
+#appBox{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:20px 0 40px;
 }
 .counter-box{
   width:340px;
@@ -46,6 +59,7 @@ body{
   padding:28px;
   box-shadow:0 8px 30px rgba(59,130,246,0.08);
   text-align:center;
+  transition:background 0.3s;
 }
 #count{font-size:4rem;margin:6px 0;user-select:none;}
 .goal-label{color:var(--text);opacity:0.75;margin-top:6px;}
@@ -54,11 +68,49 @@ input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba
 .progress-bar{height:100%;width:0%;background:var(--accent);border-radius:12px;transition:width 0.35s;}
 .btn{padding:10px 22px;border-radius:999px;border:none;margin:8px;cursor:pointer;background:transparent;font-weight:600;color:var(--accent);}
 .reset{color:#ef4444;}
-.toggle{font-size:0.9rem;color:rgba(15,23,42,0.6);margin-top:8px;}
+.toggle{font-size:0.9rem;color:var(--subtext);margin-top:8px;}
 .celebration{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(255,255,255,0.95);color:#0ea5e9;font-size:1.6rem;font-weight:700;border-radius:14px;padding:18px 28px;box-shadow:0 12px 40px rgba(59,130,246,0.12);opacity:0;transition:all .5s;z-index:20;}
 .celebration.show{transform:translate(-50%,-50%) scale(1);opacity:1;}
 #confettiCanvas{position:fixed;left:0;top:0;pointer-events:none;}
-.small-note{font-size:0.9rem;color:rgba(15,23,42,0.45);margin-top:6px;}
+.small-note{font-size:0.9rem;color:var(--subtext);margin-top:6px;transition:color 0.3s;}
+/* History Section */
+.history-box {
+  width: 340px;
+  background: var(--card);
+  border-radius: 14px;
+  padding: 10px 18px;
+  margin-top: 15px;
+  box-shadow: 0 4px 20px rgba(59,130,246,0.05);
+  transition: background 0.3s;
+}
+.history-title {
+  font-weight:600;
+  color:var(--accent);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.history-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.history-list.show { max-height: 200px; overflow-y: auto; }
+.history-item {
+  font-size: 0.9rem;
+  color: var(--text);
+  border-bottom: 1px solid rgba(15,23,42,0.1);
+  padding: 6px 0;
+}
+.clear-btn {
+  font-size:0.8rem;
+  color:#ef4444;
+  background:none;
+  border:none;
+  cursor:pointer;
+  margin-top:6px;
+}
 </style>
 </head>
 <body>
@@ -78,7 +130,14 @@ input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba
         <button class="btn" id="incBtn">+ Count</button>
         <button class="btn reset" id="resetBtn">Reset</button>
       </div>
-      <div class="toggle"><button class="btn" id="themeBtn">Toggle Theme</button></div>
+      <div class="toggle"><button class="btn" id="themeBtn">🌓</button></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="history-box">
+      <div class="history-title" id="toggleHistory">📜 View History</div>
+      <div class="history-list" id="historyList"></div>
+      <button class="clear-btn" id="clearHistory">🗑 Clear All History</button>
     </div>
   </div>
 
@@ -88,6 +147,8 @@ input[type=number]{width:88%;padding:8px;border-radius:8px;border:1px solid rgba
 <script>
 let count = parseInt(localStorage.getItem('clickCount')) || 0;
 let goal = parseInt(localStorage.getItem('clickGoal')) || 100;
+let historyData = JSON.parse(localStorage.getItem('countHistory')) || {};
+
 const countEl = document.getElementById('count');
 const progressBar = document.getElementById('progressBar');
 const goalInput = document.getElementById('goalInput');
@@ -95,25 +156,95 @@ const celebration = document.getElementById('celebration');
 const incBtn = document.getElementById('incBtn');
 const resetBtn = document.getElementById('resetBtn');
 const themeBtn = document.getElementById('themeBtn');
+const historyList = document.getElementById('historyList');
+const toggleHistory = document.getElementById('toggleHistory');
+const clearHistory = document.getElementById('clearHistory');
+
 countEl.textContent = count;
 goalInput.value = goal;
 updateProgress();
+renderHistory();
+
 function updateProgress(){ progressBar.style.width = goal>0 ? Math.min((count/goal)*100,100)+'%' : '0%'; }
-function increment(){ count++; countEl.textContent=count; localStorage.setItem('clickCount',count); updateProgress(); if(count>=goal) triggerCelebration(); }
-function reset(){ count=0; countEl.textContent=count; localStorage.setItem('clickCount',count); updateProgress(); }
-function updateGoal(){ let val=parseInt(goalInput.value); if(val&&val>0){ goal=val; localStorage.setItem('clickGoal',goal); updateProgress(); } }
+
+function increment(){
+  count++;
+  countEl.textContent = count;
+  localStorage.setItem('clickCount', count);
+  updateProgress();
+  updateHistory();
+  if(count>=goal) triggerCelebration();
+}
+
+function reset(){
+  count = 0;
+  countEl.textContent = count;
+  localStorage.setItem('clickCount', count);
+  updateProgress();
+}
+
+function updateGoal(){
+  let val = parseInt(goalInput.value);
+  if(val && val > 0){
+    goal = val;
+    localStorage.setItem('clickGoal', goal);
+    updateProgress();
+  }
+}
+
+function updateHistory(){
+  const today = new Date().toLocaleDateString();
+  historyData[today] = (historyData[today] || 0) + 1;
+  localStorage.setItem('countHistory', JSON.stringify(historyData));
+  renderHistory();
+}
+
+function renderHistory(){
+  historyList.innerHTML = '';
+  Object.keys(historyData).sort((a,b)=>new Date(b)-new Date(a)).forEach(date=>{
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.textContent = `${date}: ${historyData[date]} counts`;
+    historyList.appendChild(div);
+  });
+}
+
 goalInput.addEventListener('input',updateGoal);
 incBtn.addEventListener('click',increment);
 resetBtn.addEventListener('click',reset);
-document.body.addEventListener('click',e=>{ if(e.target.tagName.toLowerCase()==='input'||e.target.closest('button')) return; increment(); });
-themeBtn.addEventListener('click',()=>{ document.body.classList.toggle('dark'); localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light'); });
+document.body.addEventListener('click',e=>{
+  if(e.target.tagName.toLowerCase()==='input'||e.target.closest('button')) return;
+  increment();
+});
+
+themeBtn.addEventListener('click',()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');
+});
 if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
+
+toggleHistory.addEventListener('click',()=>{
+  historyList.classList.toggle('show');
+});
+
+clearHistory.addEventListener('click',()=>{
+  if(confirm('Clear all history?')){
+    historyData = {};
+    localStorage.removeItem('countHistory');
+    renderHistory();
+  }
+});
+
+// Celebration & Confetti
 let confetti=[];
-const canvas=document.getElementById('confettiCanvas'); const ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+const canvas=document.getElementById('confettiCanvas'); const ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
 function triggerCelebration(){ celebration.classList.add('show'); startConfetti(); setTimeout(()=> celebration.classList.remove('show'),3000); }
 function startConfetti(){ confetti=[]; for(let i=0;i<120;i++){ confetti.push({ x:Math.random()*canvas.width, y:Math.random()*-canvas.height, r:Math.random()*6+2, d:Math.random()*5+2, color:'hsl('+Math.random()*360+',100%,50%)', tilt:Math.random()*10-5 }); } animateConfetti(); setTimeout(()=>confetti=[],3500); }
 function animateConfetti(){ ctx.clearRect(0,0,canvas.width,canvas.height); confetti.forEach(c=>{ ctx.beginPath(); ctx.fillStyle=c.color; ctx.ellipse(c.x,c.y,c.r,c.r/2,c.tilt,0,Math.PI*2); ctx.fill(); c.y+=c.d; c.x+=Math.sin(c.tilt); if(c.y>canvas.height)c.y=-10; }); if(confetti.length>0) requestAnimationFrame(animateConfetti); }
 window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
+
+// PWA
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('service-worker.js').catch(()=>{}); }
 </script>
 </body>
